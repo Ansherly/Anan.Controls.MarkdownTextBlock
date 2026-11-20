@@ -117,6 +117,34 @@ MarkdownTextBlock.ImageLoader = myLoader; // 实现 IImageLoader
 最外框四条边 2 DIP(粗)、内部格线 1 DIP(细)。单元格只画「右 + 下」两条边、末列末行留空,
 外框由一层 `Border` 提供 —— 不会出现相邻边框叠加导致的粗细不均,任意 DPI 下都是整像素。
 
+## NativeAOT
+
+库本身对 NativeAOT / 裁剪是友好的:项目开启 `<IsAotCompatible>true</IsAotCompatible>` 与
+`<AllowUnsafeBlocks>true</AllowUnsafeBlocks>`(SkiaSharp 的 `SKXamlCanvas` 需要 unsafe 代码)。
+AOT 发布时**不会**从本程序集产生 `IL2xxx` / `IL3xxx` 警告 —— 唯一出现的是 SkiaSharp
+自身投影程序集的 `IL2104`,与本库无关。
+
+但 WinUI 3 应用在 `dotnet publish` 部署方式下有个已知坑,会影响 AOT 与非 AOT 两种发布:
+
+> **WindowsAppSDK#6394** —— publish 不会把编译好的 `.xbf` 拷到发布目录,
+> 于是 `ms-appx:///` 解析不到 XAML,进程启动即崩(退出码 `0xC000027B`,`Microsoft.UI.Xaml.dll`)。
+
+宿主应用若要以 AOT 或未打包自包含方式发布,建议在**应用工程**里补一个拷贝目标:
+
+```xml
+<Target Name="CopyXamlResourcesToPublish" AfterTargets="Publish" Condition="'$(PublishAot)' == 'true'">
+  <ItemGroup>
+    <_AotXamlResource Include="$(OutDir)**\*.xbf" />
+  </ItemGroup>
+  <Copy SourceFiles="@(_AotXamlResource)"
+        DestinationFiles="@(_AotXamlResource->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
+        SkipUnchangedFiles="true" />
+</Target>
+```
+
+同时确认 `<WindowsPackageType>None</WindowsPackageType>`、`<SelfContained>true</SelfContained>`、
+`<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>` 与发布方式匹配。
+
 ## 已知限制
 
 - 全量重建(无虚拟化):长文档请自行做输入防抖
