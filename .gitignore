@@ -1,0 +1,17 @@
+# 构建产物
+bin/
+obj/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# 打包产物
+out/
+*.nupkg
+*.snupkg
+
+# 系统
+Thumbs.db
+.DS_Store

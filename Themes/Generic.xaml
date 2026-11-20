@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tool="using:CommunityToolkit.WinUI"
+    xmlns:anan="using:Anan.Controls"
+    xmlns:md="using:Anan.Controls.MarkdownTextBlock">
+
+    <!--
+        本文件是库的「通用资源字典」:WinUI 会按 DefaultStyleKey 自动加载它,
+        因此使用方不需要在 App.xaml 里手工合并任何资源字典。
+        (约定:库内 Themes/Generic.xaml 会被框架自动应用)
+
+        代码块控件模板
+        结构参考 CC98\Controls\CodeBlock。
+        纵向:显式禁用内层 ScrollViewer 的滚动(视口高度=内容高度,永远不纵向自滚)。
+              代价是竖直滚轮会被它折算成横向滚动(那是它唯一可滚的方向),所以滚轮统一由
+              CodeBlock.cs 在 RichTextBlock 一级截获,再折算成外层滚动容器的竖直滚动。
+        横向:滚动条保持 Auto,但滚轮(含倾斜滚轮 / Shift+滚轮)永远不产生横向滚动 —— 只能拖滚动条。
+    -->
+    <Style TargetType="anan:CodeBlock">
+        <Setter Property="IsTabStop"
+                Value="False" />
+        <Setter Property="FontFamily"
+                Value="Consolas" />
+        <Setter Property="FontSize"
+                Value="13" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="anan:CodeBlock">
+                    <Grid Padding="{TemplateBinding Padding}"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="PART_LanguageTag"
+                                   Grid.Row="0"
+                                   Margin="3,0,3,2"
+                                   HorizontalAlignment="Left"
+                                   FontSize="11"
+                                   Opacity="0.55"
+                                   Text=""
+                                   Visibility="Collapsed" />
+                        <!-- 右上角复制按钮:无边框、透明底,仅悬停时由系统给出高亮 -->
+                        <Button x:Name="PART_CopyButton"
+                                Grid.Row="0"
+                                Margin="0,0,2,2"
+                                Padding="4,2"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                MinWidth="0"
+                                MinHeight="0"
+                                ToolTipService.ToolTip="复制代码"
+                                AutomationProperties.Name="复制代码">
+                            <FontIcon x:Name="PART_CopyIcon"
+                                      FontSize="12"
+                                      Glyph="&#xE8C8;" />
+                        </Button>
+                        <!--为了避免横向滚动条遮挡内容，使用padding和extension-->
+                        <ScrollViewer x:Name="PART_Scroller"
+                                      Grid.Row="1"
+                                      Padding="0,0,0,4"
+                                      tool:ScrollViewerExtensions.HorizontalScrollBarMargin="0,0,0,-12"
+                                      HorizontalScrollBarVisibility="Auto"
+                                      VerticalScrollMode="Disabled"
+                                      VerticalScrollBarVisibility="Disabled">
+                            <RichTextBlock x:Name="PART_Viewer"
+                                           FontFamily="{TemplateBinding FontFamily}"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           IsTextSelectionEnabled="True"
+                                           TextWrapping="NoWrap" />
+                        </ScrollViewer>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  MarkdownTextBlock 控件模板:内容全部由渲染策略动态生成,模板只提供一个根面板  -->
+    <Style TargetType="md:MarkdownTextBlock">
+        <Setter Property="IsTabStop"
+                Value="False" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="HorizontalAlignment"
+                Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="md:MarkdownTextBlock">
+                    <Border Padding="{TemplateBinding Padding}"
+                            HorizontalAlignment="Stretch"
+                            Background="{TemplateBinding Background}">
+                        <StackPanel x:Name="PART_RootPanel"
+                                    HorizontalAlignment="Stretch" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

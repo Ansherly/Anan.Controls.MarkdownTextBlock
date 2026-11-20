@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <OutputType>Library</OutputType>
+    <UseWinUI>true</UseWinUI>
+    <WinUISDKReferences>false</WinUISDKReferences>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <!--
+      AOT / 裁剪兼容:
+        · SkiaSharp 的 SKXamlCanvas 实现了泛型 WinRT 接口,需要 unsafe 代码(CsWinRT1030);
+        · IsAotCompatible 会启用裁剪/AOT 分析器,保证库在 NativeAOT 下不静默失效。
+    -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsAotCompatible>true</IsAotCompatible>
+
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+
+    <AssemblyName>MarkdownTextBlock</AssemblyName>
+    <RootNamespace>Anan.Controls.MarkdownTextBlock</RootNamespace>
+  </PropertyGroup>
+
+  <!-- ================= 包元数据 ================= -->
+  <PropertyGroup>
+    <PackageId>Anan.Controls.MarkdownTextBlock</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Anan</Authors>
+    <Company>Anan</Company>
+    <Copyright>Copyright (c) Anan</Copyright>
+    <Description>WinUI 3 的 Markdown 渲染控件:Markdig 解析 + 策略化渲染,支持标题 / 段落 / 引用 / 列表 / 任务列表 / 表格 / 代码块(语法高亮 + 复制)/ 图片 / HTML 白名单 / LaTeX 公式。</Description>
+    <PackageTags>winui;winui3;markdown;control;xaml;markdown-viewer;latex;codeblock;winappsdk</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Ansherly/Anan.Controls.MarkdownTextBlock.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/Ansherly/Anan.Controls.MarkdownTextBlock</PackageProjectUrl>
+    <PackageReleaseNotes>首个正式版本:标题 / 粗体分色、代码块语言标签与复制按钮、表格外粗内细、图片弱引用缓存、LaTeX 公式渲染。</PackageReleaseNotes>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <!-- ================= 依赖(全部为最新稳定版) ================= -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.7.0" />
+    <PackageReference Include="Markdig" Version="1.6.0" />
+    <PackageReference Include="AngleSharp" Version="1.10.5" />
+    <PackageReference Include="ColorCode.WinUI" Version="2.0.15" />
+    <!-- 公式渲染:CSharpMath 1.x 只有预发布版,这里用最新稳定版 0.5.1(配套 SkiaSharp 2.88.9) -->
+    <PackageReference Include="CSharpMath.SkiaSharp" Version="0.5.1" />
+    <PackageReference Include="SkiaSharp.Views.WinUI" Version="2.88.9" />
+    <!-- CodeBlock 模板里的 ScrollViewerExtensions.HorizontalScrollBarMargin -->
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.251219" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <!-- 图标只放根目录一份(PackageIcon 取根目录路径):先摘掉默认的 Content/None 再显式加入,避免 content/ 重复条目 -->
+    <Content Remove="icon.png" />
+    <None Remove="icon.png" />
+    <None Include="icon.png" Pack="true" PackagePath="\" />
+    <None Include="LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!--
+    WinUI 库的资源索引(.pri)必须随包分发,否则消费方解析不到 Themes/Generic.xaml 与 *.xbf,
+    控件模板会整块缺失。用 BuildOutputInPackage 才能拿到构建产物里的 pri。
+  -->
+  <Target Name="PackWinUIPri" DependsOnTargets="Build" BeforeTargets="_GetBuildOutputFilesWithTfm">
+    <ItemGroup>
+      <BuildOutputInPackage Include="$(OutputPath)$(AssemblyName).pri" Condition="Exists('$(OutputPath)$(AssemblyName).pri')" />
+      <!-- XBF 已作为 EmbeddedData 内嵌进 .pri,不需要单独分发 -->
+    </ItemGroup>
+  </Target>
+
+</Project>
