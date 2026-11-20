@@ -19,6 +19,13 @@
     <IsAotCompatible>true</IsAotCompatible>
 
     <Platforms>x86;x64;ARM64</Platforms>
+
+    <!--
+      库必须以 AnyCPU 产出:否则 PlatformTarget 会跟随 $(Platform),
+      把 DLL 的 PE Machine 打成 x64 / ARM64,包里那份就只对单一架构友好。
+      IL 本身是架构无关的,AnyCPU 戳才能让 x86 / x64 / ARM64 消费方共用同一个包。
+    -->
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 
     <AssemblyName>MarkdownTextBlock</AssemblyName>
@@ -29,10 +36,10 @@
   <PropertyGroup>
     <PackageId>Anan.Controls.MarkdownTextBlock</PackageId>
     <Version>1.0.0</Version>
-    <Authors>Anan</Authors>
-    <Company>Anan</Company>
-    <Copyright>Copyright (c) Anan</Copyright>
-    <Description>WinUI 3 的 Markdown 渲染控件:Markdig 解析 + 策略化渲染,支持标题 / 段落 / 引用 / 列表 / 任务列表 / 表格 / 代码块(语法高亮 + 复制)/ 图片 / HTML 白名单 / LaTeX 公式。</Description>
+    <Authors>Ansherly</Authors>
+    <Company>Ansherly</Company>
+    <Copyright>Copyright (c) 2026 Ansherly</Copyright>
+    <Description>WinUI 3 的 Markdown 渲染控件，提供Markdig 解析和策略化渲染,支持标题 / 段落 / 引用 / 列表 / 任务列表 / 表格 / 代码块/ 图片 / HTML 白名单 / LaTeX 公式。</Description>
     <PackageTags>winui;winui3;markdown;control;xaml;markdown-viewer;latex;codeblock;winappsdk</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
