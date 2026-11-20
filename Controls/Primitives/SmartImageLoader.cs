@@ -18,8 +18,9 @@ namespace Anan.Controls.Primitives;
 /// <remarks>
 ///     移植自 CC98 的 <c>Controls/Primitives/SmartImageLoader</c>,去掉了对宿主应用的耦合:
 ///     原实现走 <c>App.Current.GetService&lt;ApiService&gt;()</c> 取网络字节、用 <c>UrlEx</c> 判断地址类型、
-///     并用 .NET 9 的 <see cref="System.Threading.Lock" />;这里改为自带 <see cref="HttpClient" />、
-///     内置地址判断,锁改回 <see langword="object" />(本工程是 net8.0,没有 <c>Lock</c> 类型)。
+///     原实现走 <c>App.Current.GetService&lt;ApiService&gt;()</c> 取网络字节、用 <c>UrlEx</c> 判断地址类型、
+///     并用 .NET 9 的 <c>System.Threading.Lock</c>;这里改为自带 <see cref="HttpClient" />、
+///     内置地址判断,锁改回 <see langword="object" />(net8.0 目标没有 <c>Lock</c> 类型)。
 ///     <para>
 ///         返回类型是 <see cref="ImageSource" />,可同时承载位图(<c>BitmapImage</c>)与矢量图
 ///         (<c>SvgImageSource</c>)—— 具体类型由 <see cref="ImageSourceFactory" /> 按内容嗅探决定,本类不关心。

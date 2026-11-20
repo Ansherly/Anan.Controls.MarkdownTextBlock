@@ -3,14 +3,15 @@
 WinUI 3 的 Markdown 渲染控件。Markdig 解析成 AST,再由可替换的渲染策略翻译成
 `StackPanel` 中交替排列的 `RichTextBlock`(文本流)与块级 UI 元素(图片 / 代码块 / 引用 / 表格 / 公式)。
 
-- 目标框架:`net10.0-windows10.0.19041.0`,Windows App SDK 2.7
+- 目标框架:`net8.0` / `net9.0` / `net10.0`(`-windows10.0.19041.0`),Windows App SDK 2.7
+- 同一份包支持 x86 / x64 / ARM64(AnyCPU 程序集 + 各架构原生依赖)
 - 依赖全部为稳定版;AOT / 裁剪友好(`IsAotCompatible`)
 - 控件模板通过库内的 `Themes/Generic.xaml` **自动加载**,不需要在 `App.xaml` 里合并任何资源字典
 
 ## 安装
 
 ```bash
-dotnet add package Anan.Controls.MarkdownTextBlock --version 1.0.0
+dotnet add package Anan.Controls.MarkdownTextBlock --version 1.1.0
 ```
 
 ## 最小用法

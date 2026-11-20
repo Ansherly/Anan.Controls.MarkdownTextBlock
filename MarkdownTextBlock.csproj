@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <!--
+      三个 TFM:WinUI 3 消费方大多还在 net8 / net9,只发 net10 的话他们在搜索列表里根本看不到本包
+      (NuGet 会按目标框架过滤掉不兼容的包)。
+    -->
+    <TargetFrameworks>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <OutputType>Library</OutputType>
     <UseWinUI>true</UseWinUI>
@@ -35,7 +39,7 @@
   <!-- ================= 包元数据 ================= -->
   <PropertyGroup>
     <PackageId>Anan.Controls.MarkdownTextBlock</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Ansherly</Authors>
     <Company>Ansherly</Company>
     <Copyright>Copyright (c) 2026 Ansherly</Copyright>
@@ -47,7 +51,7 @@
     <RepositoryUrl>https://github.com/Ansherly/Anan.Controls.MarkdownTextBlock.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/Ansherly/Anan.Controls.MarkdownTextBlock</PackageProjectUrl>
-    <PackageReleaseNotes>首个正式版本:标题 / 粗体分色、代码块语言标签与复制按钮、表格外粗内细、图片弱引用缓存、LaTeX 公式渲染。</PackageReleaseNotes>
+    <PackageReleaseNotes>1.1.0:新增 net8.0 / net9.0 / net10.0 三目标支持(同一套 API);其余行为与 1.0.0 一致。</PackageReleaseNotes>
 
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -80,15 +84,6 @@
     <None Include="LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <!--
-    WinUI 库的资源索引(.pri)必须随包分发,否则消费方解析不到 Themes/Generic.xaml 与 *.xbf,
-    控件模板会整块缺失。用 BuildOutputInPackage 才能拿到构建产物里的 pri。
-  -->
-  <Target Name="PackWinUIPri" DependsOnTargets="Build" BeforeTargets="_GetBuildOutputFilesWithTfm">
-    <ItemGroup>
-      <BuildOutputInPackage Include="$(OutputPath)$(AssemblyName).pri" Condition="Exists('$(OutputPath)$(AssemblyName).pri')" />
-      <!-- XBF 已作为 EmbeddedData 内嵌进 .pri,不需要单独分发 -->
-    </ItemGroup>
-  </Target>
+
 
 </Project>
